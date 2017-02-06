@@ -2,13 +2,15 @@
 # DO NOT EDIT!
 <%= if use_proto_path do %>
 defmodule <%= top_mod %> do
+  <%= for proto_path <- proto_paths do %>
   @external_resource Path.expand("<%= proto_path %>", __DIR__)
-  use Protobuf, from: Path.expand("<%= proto_path %>", __DIR__)
+  <% end %>
+  use Protobuf, from: <%= inspect(proto_paths) %> |> Enum.map(&Path.expand(&1, __DIR__)), use_package_names: <%= inspect(use_package_names) %>
 end
 <% end %>
 <%= Enum.map proto.services, fn(service) -> %>
 defmodule <%= top_mod %>.<%= service.name %>.Service do
-  use GRPC.Service, name: "<%= service_prefix %><%= service.name %>"
+  use GRPC.Service, name: "<%= service.grpc_name %>"
 
   <%= for rpc <- service.rpcs do %>
   <%= compose_rpc.(rpc, top_mod) %>
@@ -23,6 +25,6 @@ end
 defmodule <%= top_mod %> do
   use Protobuf, """
   <%= proto_content %>
-  """
+  """, use_package_names: <%= inspect(use_package_names) %>
 end
 <% end %>

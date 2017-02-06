@@ -5,7 +5,7 @@ defmodule GRPC.Proto do
 
   defmodule Service do
     @moduledoc false
-    defstruct [name: nil, rpcs: []]
+    defstruct [name: nil, grpc_name: nil, rpcs: []]
   end
 
   defmodule Message do
